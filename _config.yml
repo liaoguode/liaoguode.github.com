@@ -26,6 +26,13 @@ github_username:  liaoguode
 encoding: utf-8
 # Build settings
 markdown: kramdown
+kramdown:
+  input: GFM
+  extensions:
+    - autolink
+    - footnotes
+    - smart
+  syntax_highlighter: rouge
 theme: minima
 highlighter: rouge
 gems:
