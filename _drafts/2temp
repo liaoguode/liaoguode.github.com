@@ -1,0 +1,9 @@
+<pre><code>
+    List<Integer> data = Arrays.asList(1, 2, 3, 4, 5);
+    JavaRDD<Integer> distData = sc.parallelize(data);
+</code></pre>
+
+
+<pre><code>
+    JavaRDD<String> distFile = sc.textFile("data.txt");
+</code></pre>
