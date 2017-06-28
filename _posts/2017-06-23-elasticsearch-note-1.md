@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "elasticsearch学习笔记二"
+title:  "elasticsearch学习笔记一"
 categories: elasticsearch
 tag: elasticsearch学习笔记
 ---
@@ -116,3 +116,48 @@ Full text queries
 <br />
 
 高级全文检索一般用于在像邮件正文这样的全文字段上运行全文检索，它们理解已经被分词的字段，并且在执行之前将每个字段的分词器（或者查询分词器）应用到查询串上。
+
+全文检索包括如下
+* match查询：全文检索的标准查询模式，包括模糊查询、短语查询和近似查询
+* match_phrase查询：和match查询相似，但是被用来进行短语精确匹配和单词近似匹配
+* match_phrase_prefix查询：和match_phrase相似，但是被用来进行在最后的单词上进行通配符查询
+* multi_match查询：在多字段上处理的match查询
+* common_terms查询：一个更专有化的查询，对于出现率较低的单词进行查询表现较好
+* query_string查询：支持复杂的lucene查询串语法，允许你指定AND|OR|NOT条件和多字段查询在单个查询串中。值用于专业用户。
+* simple_query_string:一个更简单和强健的query_string语法，比较适用于普通用户
+
+<br />
+
+Match查询
+
+<br />
+
+match查询接受文本、数字和日期，分析这些输入，然后构造一个查询，例如：
+```json
+GET /_search
+{
+    "query": {
+        "match" : {
+            "message" : "this is a test"
+        }
+    }
+}
+```
+
+注意，message是一个字段的名称，你能将它替换成任何字段的名称（包含_all）
+
+<br />
+match
+match查询是一种布尔类型，这意味着被提供的文本是用来被分析，并且分析过程从被提供的文本中构建的bool查询。操作符可以是or或者and来控制bool子句，默认为or。可选的should子句最小数量能用minimum_should_match参数来设置。
+
+analyzer参数能被设置用来控制分析器对于文本的分析过程。默认为字段精确的匹配定义，或者系统默认的分析器。
+
+lenient参数设置为true时，将忽略配错数据类型带来的异常，例如用一个文本查询串来查询一个数字字段。一般默认为false。
+
+
+<br />
+Fuzziness
+
+fuzziness参数允许基于正在被查询字段的类型进行模糊匹配，下面为被允许的配置项
+
+在下面示例中prefix_length和max_expansions参数用来控制模糊处理过程。如果模糊想
