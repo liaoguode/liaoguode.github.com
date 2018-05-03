@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关注java生态，目标是成为一名快乐的架构师 | Peterliao，Software Engineer，Java Developer | 这里是 @Peterliao 的个人博客，与你一起成长。">
+    <meta name="keywords"  content="Peterliao, Java, 架构， spring">
+    <meta name="theme-color" content="#000000">
+    
+    <title>elasticsearch学习笔记一 - peterliao的博客 | Peterliao Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/elasticsearch/2017/06/23/elasticsearch-note-1/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Peterliao Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#elasticsearch学习笔记" title="elasticsearch学习笔记">elasticsearch学习笔记</a>
+                        
+                    </div>
+                    <h1>elasticsearch学习笔记一</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by Peterliao Blog on June 23, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="query--dsl">Query  DSL</h1>
+
+<h2 id="概述">概述</h2>
+<p><br /></p>
+
+<p>Elasticsearch提供一个基于json的查询DSL，把查询DSL当做一颗查询抽象语法树（AST），查询DSL是由两部分子句组成的：</p>
+
+<ul>
+  <li>叶查询子句
+叶查询子句在特定字段上查询特定值，例如match、term和range查询。这些查询能被自身使用。</li>
+  <li>混合查询子句
+混合查询子句包含其他叶查询和混合查询。混合查询使用逻辑词汇来组合多个查询（如bool和dis_max查询），或者更改它们的属性（比如constant_score查询）。</li>
+</ul>
+
+<p><br /></p>
+
+<p>查询子句的行为取决于它们的查询和过滤上下文环境。</p>
+
+<h2 id="查询和过滤上下文">查询和过滤上下文</h2>
+<p><br /></p>
+
+<p>查询子句的行为取决于它们的查询和过滤上下文环境。</p>
+
+<p>查询上下文</p>
+
+<ul>
+  <li>在查询上下文中使用的查询子句确定了文档对于查询子句的匹配度，但是没有确定文档是否匹配上了，查询子句计算出_score结果表示此文档相对于其他文档的匹配度。</li>
+  <li>当查询子句被传递一个查询参数时查询上下文生效，例如在search API中传递参数。</li>
+</ul>
+
+<p>过滤上下文</p>
+
+<ul>
+  <li>在过滤上下文中使用的查询子句确定了文档是否匹配查询子句，确定结果是简单表示为yes和no,不用计算score。过滤上下文大部分使用过滤结构，例如</li>
+  <li>timestamp在2015和2016之间</li>
+  <li>
+    <p>status字段是否设置为published
+被频繁使用的filter将被elasticsearch自动缓存起来加速性能</p>
+  </li>
+  <li>当查询子句被传递一个过滤参数时过滤上下文生效，例如在bool查询中传递参数filter和must_not，constant_score中的过滤参数，或者过滤聚合。</li>
+</ul>
+
+<p>下面是查询子句在查询和过滤上下文被使用的search api的例子，这个查询使用下面的条件去匹配文档</p>
+<ul>
+  <li>title字段包含字符串search</li>
+  <li>content字段包含字符串elasticsearch</li>
+  <li>status字段包含字符串published</li>
+  <li>publish_date字段包含晚于2015-01-01的时间
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+</span><span class="s2">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">//</span><span class="mi">1</span><span class="w">
+  </span><span class="s2">"bool"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">//</span><span class="mi">2</span><span class="w">
+    </span><span class="s2">"must"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w"> </span><span class="s2">"match"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"title"</span><span class="p">:</span><span class="w">   </span><span class="s2">"Search"</span><span class="w">        </span><span class="p">}},</span><span class="w"> </span><span class="err">//</span><span class="mi">2</span><span class="w">
+      </span><span class="p">{</span><span class="w"> </span><span class="s2">"match"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Elasticsearch"</span><span class="w"> </span><span class="p">}}</span><span class="w">  </span><span class="err">//</span><span class="mi">2</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"filter"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="err">//</span><span class="mi">3</span><span class="w">
+      </span><span class="p">{</span><span class="w"> </span><span class="s2">"term"</span><span class="p">:</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"published"</span><span class="w"> </span><span class="p">}},</span><span class="w"> </span><span class="err">//</span><span class="mi">4</span><span class="w">
+      </span><span class="p">{</span><span class="w"> </span><span class="s2">"range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"publish_date"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"gte"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-01-01"</span><span class="w"> </span><span class="p">}}}</span><span class="w"> </span><span class="err">//</span><span class="mi">4</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <ol>
+      <li>query参数指出查询上下文</li>
+      <li>bool和两个match子句在查询上下文中被使用，意味着它们被用来确定文档的匹配程度</li>
+      <li>filter参数表示过滤上下文</li>
+      <li>term和range子句在过滤上下文中被使用，它们将过滤掉不匹配的文档，但是不影响文档的匹配度</li>
+    </ol>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<p>在查询上下文中使用影响文档匹配度的子句，其他子句应该放在过滤上下文中。</p>
+
+<h2 id="match-all-query">Match All Query</h2>
+<p><br /></p>
+
+<p>最简单的查询是匹配所有文档，所有文档的_score都是1</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="s2">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"match_all"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>_score能被boost参数改变</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="s2">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"match_all"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"boost"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="w"> </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>mathc_none和match_all相反，不匹配任何文档</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="s2">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"match_none"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="full-text-queries">Full text queries</h2>
+<p><br /></p>
+
+<p>高级全文检索一般用于在像邮件正文这样的全文字段上运行全文检索，它们理解已经被分词的字段，并且在执行之前将每个字段的分词器（或者查询分词器）应用到查询串上。</p>
+
+<p>全文检索包括如下</p>
+<ul>
+  <li>match查询：全文检索的标准查询模式，包括模糊查询、短语查询和近似查询</li>
+  <li>match_phrase查询：和match查询相似，但是被用来进行短语精确匹配和单词近似匹配</li>
+  <li>match_phrase_prefix查询：和match_phrase相似，但是被用来进行在最后的单词上进行通配符查询</li>
+  <li>multi_match查询：在多字段上处理的match查询</li>
+  <li>common_terms查询：一个更专有化的查询，对于出现率较低的单词进行查询表现较好</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>query_string查询：支持复杂的lucene查询串语法，允许你指定AND</td>
+          <td>OR</td>
+          <td>NOT条件和多字段查询在单个查询串中。值用于专业用户。</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>simple_query_string:一个更简单和强健的query_string语法，比较适用于普通用户</li>
+</ul>
+
+<p><br /></p>
+
+<p>Match查询</p>
+
+<p><br /></p>
+
+<p>match查询接受文本、数字和日期，分析这些输入，然后构造一个查询，例如：</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="s2">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"match"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"message"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"this is a test"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>注意，message是一个字段的名称，你能将它替换成任何字段的名称（包含_all）</p>
+
+<p><br />
+match
+match查询是一种布尔类型，这意味着被提供的文本是用来被分析，并且分析过程从被提供的文本中构建的bool查询。操作符可以是or或者and来控制bool子句，默认为or。可选的should子句最小数量能用minimum_should_match参数来设置。</p>
+
+<p>analyzer参数能被设置用来控制分析器对于文本的分析过程。默认为字段精确的匹配定义，或者系统默认的分析器。</p>
+
+<p>lenient参数设置为true时，将忽略配错数据类型带来的异常，例如用一个文本查询串来查询一个数字字段。一般默认为false。</p>
+
+<p><br />
+Fuzziness</p>
+
+<p>fuzziness参数允许基于正在被查询字段的类型进行模糊匹配，下面为被允许的配置项</p>
+
+<p>在下面示例中prefix_length和max_expansions参数用来控制模糊处理过程。如果模糊想</p>
+
+
+                <hr style="visibility: hidden;">
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/spark2/2017/06/20/spark2-note-3/" data-toggle="tooltip" data-placement="top" title="spark2学习笔记三">
+                        Previous<br>
+                        <span>spark2学习笔记三</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/spark2/2017/06/27/spark2-note-4/" data-toggle="tooltip" data-placement="top" title="spark2学习笔记四">
+                        Next<br>
+                        <span>spark2学习笔记四</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#spark2学习笔记" title="spark2学习笔记" rel="5">
+                                    spark2学习笔记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#springboot" title="springboot" rel="3">
+                                    springboot
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#elasticsearch学习笔记" title="elasticsearch学习笔记" rel="4">
+                                    elasticsearch学习笔记
+                                </a>
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="https://blog.csdn.net/liaoguode">peterliao csdn</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "liaoguode";
+    var disqus_identifier = "/elasticsearch/2017/06/23/elasticsearch-note-1";
+    var disqus_url = "http://localhost:4000/elasticsearch/2017/06/23/elasticsearch-note-1/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/liaoguode">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Peterliao Blog 2018
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
