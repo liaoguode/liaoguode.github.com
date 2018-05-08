@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关注java生态，目标是成为一名快乐的架构师 | Peterliao，Software Engineer，Java Developer | 这里是 @Peterliao 的个人博客，与你一起成长。">
+    <meta name="keywords"  content="Peterliao, Java, 架构， spring">
+    <meta name="theme-color" content="#000000">
+    
+    <title>peterliao的博客 | Peterliao Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Peterliao Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>Peterliao Blog</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">一位热爱生活的程序员</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- PostList Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                postlist-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/git/2018/05/03/git-note-1/">
+        <h2 class="post-title">
+            git笔记一
+        </h2>
+        
+        <div class="post-content-preview">
+            在windows下如何生成gitlab的ssh key
+
+打开git bash
+
+输入命令ssh-keygen -t rsa -C “email”（为gitlab的邮箱），会提示设置密码什么的，一路默认不设置。
+
+
+然后在用户目录下的.ssh目录下会有两个文件，打开id_rsa.pub文件，此文件的内容为ssh公钥，将其贴到gitlab对应的ssh公钥位置即可。
+
+
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on May 3, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/spring/2017/09/27/springboot-note3/">
+        <h2 class="post-title">
+            springboot学习笔记三
+        </h2>
+        
+        <div class="post-content-preview">
+            spring boot 学习笔记三(数据库操作)
+
+spring boot整合redis
+
+1.redis介绍
+
+redis是一个缓存和内存数据库。
+
+2.redis的maven包导入
+
+&lt;dependency&gt;
+&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+&lt;artifactId&gt;spring-boo...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on September 27, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/spring/2017/09/26/springboot-note-2/">
+        <h2 class="post-title">
+            springboot学习笔记二
+        </h2>
+        
+        <div class="post-content-preview">
+            spring boot 学习笔记二(数据库操作)
+
+spring boot整合druid
+
+1.druid是什么
+
+
+  druid是alibaba开源的一个数据库连接池，通过网上的比较发现，性能不错，扩展性强，具有SQL解析和页面监控功能，功能强大。
+
+
+2.如何整合spring boot 和druid
+
+
+  引入maven的jar包
+
+
+&lt;dependency&gt;
+    &...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on September 26, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/07/24/spark2-note-6/">
+        <h2 class="post-title">
+            Spark2 Note 6
+        </h2>
+        
+        <div class="post-content-preview">
+            
+
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on July 24, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/elasticsearch/2017/07/07/elasticsearch-note-4/">
+        <h2 class="post-title">
+            elasticsearch学习笔记四
+        </h2>
+        
+        <div class="post-content-preview">
+            聚合
+
+桶
+满足特定条件的文档的集合
+
+  一个雇员属于 男性 桶或者 女性 桶
+  奥尔巴尼属于 纽约 桶
+  日期2014-10-28属于 十月 桶
+指标
+=======
+对桶内的文档进行统计计算
+
+
+桶能让我们划分文档到有意义的集合， 但是最终我们需要的是对这些桶内的文档进行一些指标的计算。分桶是一种达到目的的手段：它提供了一种给文档分组的方法来让我们可以计算感兴趣的指标。
+
+大多数 ...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on July 7, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/elasticsearch/2017/06/30/elasticsearch-note-3/">
+        <h2 class="post-title">
+            elasticsearch学习笔记三
+        </h2>
+        
+        <div class="post-content-preview">
+            多字段搜索
+
+多字符串查询
+查询子句的权重取决于子句的位置，位于二层bool的子句权重
+
+单字符串查询
+了解数据才能构建单字符串查询
+单字符查询时数据有三种情形
+
+  最佳字段：短语如何分词去匹配，词组匹配调整匹配度
+当搜索词语具体概念的时候，比如 “brown fox” ，词组比各自独立的单词更有意义。像 title 和 body 这样的字段，尽管它们之间是相关的，但同时又彼此相互竞争。文...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on June 30, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/elasticsearch/2017/06/29/elasticsearch-note-2/">
+        <h2 class="post-title">
+            elasticsearch学习笔记二
+        </h2>
+        
+        <div class="post-content-preview">
+            term和match的使用区别
+
+
+term
+
+
+  在过滤上下文中使用（filter），用来过滤文档
+  terms，多值,terms:[]
+
+
+
+
+match
+
+
+  在查询上下文中使用(query)，用来查询文档
+  实质上为通过analyzer分词，将分词后的词通过bool和term进行组合查询
+  boost：提高查询权重，加大评分权重
+
+
+bool
+
+语法
+“bool” : {
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on June 29, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/spark2/2017/06/28/spark2-note-5/">
+        <h2 class="post-title">
+            spark2学习笔记五
+        </h2>
+        
+        <div class="post-content-preview">
+            Shuffle操作
+
+
+Spark中的某些操作触发一个名为shuffle的事件。shuffle是Spark重新分发数据的机制，以便在不同的分区之间进行分组。这通常涉及在执行器和驱动程序之间复制数据，从而进行复杂而昂贵的操作。
+
+要了解在Shuffle过程中发生了什么，我们可以参照reduceByKey操作的例子。reduceByKey操作生成一个新的RDD，其中同一个key的所有值被合并成一...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on June 28, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/spark2/2017/06/27/spark2-note-4/">
+        <h2 class="post-title">
+            spark2学习笔记四
+        </h2>
+        
+        <div class="post-content-preview">
+            RDD操作
+
+
+理解闭包
+
+spark中最困难的事情之一就是理解代码在集群中执行时变量和方法的生命周期范围。在变量生命周期之外使用RDD操作修改变量可能是一个常见的错误。在下面的例子中，有一段使用foreach去增加计数器的代码，但是除了这个操作导致问题外，其他操作也可能会产生相似的问题。
+
+将下面当做本地RDD元素求和，对于操作是否在同一个JVM中，这决定了操作的结果。一个普遍的例子是sp...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on June 27, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/elasticsearch/2017/06/23/elasticsearch-note-1/">
+        <h2 class="post-title">
+            elasticsearch学习笔记一
+        </h2>
+        
+        <div class="post-content-preview">
+            Query  DSL
+
+概述
+
+
+Elasticsearch提供一个基于json的查询DSL，把查询DSL当做一颗查询抽象语法树（AST），查询DSL是由两部分子句组成的：
+
+
+  叶查询子句
+叶查询子句在特定字段上查询特定值，例如match、term和range查询。这些查询能被自身使用。
+  混合查询子句
+混合查询子句包含其他叶查询和混合查询。混合查询使用逻辑词汇来组合多个查询（如boo...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Peterliao Blog on June 23, 2017
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    
+    <li class="next">
+        <a href="/page2">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
+
+
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                                <a href="/tags/#spark2学习笔记" title="spark2学习笔记" rel="5">
+                                    spark2学习笔记
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#springboot" title="springboot" rel="3">
+                                    springboot
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#elasticsearch学习笔记" title="elasticsearch学习笔记" rel="4">
+                                    elasticsearch学习笔记
+                                </a>
+                            
+                        
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/avatar-peterliao.jpg" />
+                        
+                        
+                            <p>写下感想，<br>一起成长</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/liaoguode">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            
+                        </ul>
+                    </div>
+                </section>
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="https://blog.csdn.net/liaoguode">peterliao csdn</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/liaoguode">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Peterliao Blog 2018
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
