@@ -104,7 +104,9 @@ public class LogRequestFilter extends ZuulFilter {
     对于响应来说，和请求碰到的问题是一样的。读取响应的数据后，再次读取将为空。所以对于响应的处理逻辑和请求的处理逻辑是一致的。需要注意的时需要在处理响应的逻辑上加入处理token的逻辑，包括token的失效（toekn黑名单）和token的刷新等。
 
 4. 打印响应实际处理
+
 ```java
+
 import com.alibaba.fastjson.JSONObject;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -172,7 +174,7 @@ public class LogResponseFilter extends ZuulFilter {
 5. token处理逻辑
     对于前后端的分离模型来说，后端是完全无状态的，对于用户信息和权限认证来看，一般的处理就是分布式会话或者jwt的token。对比两种实现方案，jwt的token实现更轻量更优美。每个请求都会带有签名的token，网关在处理每个请求时使用对应的处理filter处理token，包括token的解析和认证。
 
-6 token实际处理
+6. token实际处理
 
 ```java
 import com.alibaba.fastjson.JSONObject;
