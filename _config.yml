@@ -60,7 +60,7 @@ netease_comment: false
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "写下感想，<br>一起成长"
-sidebar-avatar: /img/avatar-peterliao.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+#sidebar-avatar:       # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
