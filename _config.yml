@@ -78,11 +78,8 @@ service-worker: true
 
 # Friends
 friends: [
-    {
-    #     title: "Su",
-    #     href: "http://su.gallery/"
-    # },{
-        title: "peterliao csdn",
-        href: "https://blog.csdn.net/liaoguode"
-    }
+    # {
+    #     title: "peterliao csdn",
+    #     href: "https://blog.csdn.net/liaoguode"
+    # }
 ]
